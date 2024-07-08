@@ -7,7 +7,7 @@ const ChatWindow: React.FC = () => {
   const [messages, setMessages] = useState<{ text: string; isUser: boolean }[]>([]);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-  const handleSend = (message: string) => {
+  const handleSendMessage = (message: string) => {
     setMessages((prev) => [...prev, { text: message, isUser: true }]);
     setMessages((prev) => [...prev, { text: "asd", isUser: false }]);
   };
@@ -24,7 +24,7 @@ const ChatWindow: React.FC = () => {
         ))}
         <div ref={messagesEndRef} />
       </div>
-        <ChatInput onSend={handleSend} />
+        <ChatInput onSend={handleSendMessage} />
     </div>
   );
 };

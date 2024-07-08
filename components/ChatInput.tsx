@@ -8,16 +8,16 @@ interface ChatInputProps {
 const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
   const [message, setMessage] = useState('');
 
-  const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+  const handleChangeMessage: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     setMessage(e.target.value);
   };
 
   const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key === 'Enter') {
-      handleSend();
+      sendHandleMessage();
     }
   };
-  const handleSend = () => {
+  const sendHandleMessage = () => {
     if (message.trim() !== '') {
       onSend(message);
       setMessage('');
@@ -29,9 +29,9 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
         type="text"
         value={message}
         placeholder="메시지를 입력하세요..."
-        onChange={handleChange}
+        onChange={handleChangeMessage}
         onKeyDown={handleKeyDown}
-        onClick={handleSend}
+        onClick={sendHandleMessage}
       />
     </div>
   );
