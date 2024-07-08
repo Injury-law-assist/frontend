@@ -1,4 +1,3 @@
-import Link from "next/link";
 import Input from "./Input";
 import NewAccount from "./NewAccount";
 
