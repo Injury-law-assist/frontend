@@ -7,12 +7,11 @@ const NewAccount = () => {
         <span className="text-sm">Need to create an account?</span>
         <Link
           className="text-indigo-700 hover:text-indigo-500 font-semibold"
-          href="/create"
+          href="/Create"
         >
           Create an account
         </Link>
       </div>
-
       <Link
         className="mt-4 border rounded-md hover:ring-1 hover:bg-slate-100"
         href="/google"

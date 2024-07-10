@@ -7,22 +7,24 @@ import { useRouter } from "next/navigation"
 import { useAuthStore } from "@/app/store";
 
 const AccountForm = () => {
-  const [email,setEmail] = useState('')
-  const [password,setPassword] = useState('')
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const router = useRouter();
-  const setTokens = useAuthStore((state)=>state.setTokens);
+  const setTokens = useAuthStore((state) => state.setTokens);
 
-  const handleSubmit = async(e:React.FormEvent)=>{
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const result = await getLogin(email, password);
-      if (result) {
-        console.log('Login successful:', result);
-        setTokens(result.accessToken, result.refreshToken);
+      const data = await getLogin(email, password);
+      if (data && data.accessToken && data.refreshToken) {
+        console.log('Login successful:', data);
+        setTokens(data.accessToken, data.refreshToken);
         router.push('/Chat');
+      } else {
+        console.error('Login failed: Invalid response from server');
       }
     } catch (err) {
-      throw Error('Login failed')
+      console.error('Login failed', err);
     }
   }
 
@@ -34,14 +36,14 @@ const AccountForm = () => {
         type="email"
         placeholder="Enter your Email"
         value={email}
-        onChange={(e)=>setEmail(e.target.value)}
+        onChange={(e) => setEmail(e.target.value)}
       />
       <Input
         context="Password"
         type="password"
         placeholder="Enter your Password"
         value={password}
-        onChange={(e)=>setPassword(e.target.value)}
+        onChange={(e) => setPassword(e.target.value)}
       />
       <div>
         <button className="w-full bg-indigo-600 rounded-md text-white font-semibold py-1 px-4 hover:bg-indigo-700 transition duration-200">
