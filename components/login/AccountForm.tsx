@@ -1,4 +1,4 @@
-import Input from "./Input";
+import Input from "../shared/Input";
 import NewAccount from "./NewAccount";
 
 const AccountForm = () => {
