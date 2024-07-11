@@ -31,6 +31,9 @@ const Navbar = () => {
             <Link className=" rounded-md" href="/About">
               ABOUT
             </Link>
+            <Link className=" rounded-md" href="/chat">
+              Chat Bot
+            </Link>
           </div>
         </div>
       </div>

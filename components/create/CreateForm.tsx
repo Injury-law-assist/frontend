@@ -1,25 +1,37 @@
 "use client";
 import axios from "axios";
 import { useState } from "react";
-import Input from "../shared/Input";
+import InputLogin from "../shared/Inputlogin";
+
+const URL = "https://api.g-start-up.com/api/auth/join";
 
 export default function CreateForm() {
-  const [nickname, setNickname] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [newNickname, setNewNickname] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [newConfirm, setNewConfirm] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     try {
-      const response = await axios.post("http://localhost:3001/", {
-        nickname,
-        email,
-        password,
+      if (newPassword !== newConfirm)
+        throw new Error("비밀번호가 일치하지 않습니다.");
+
+      const response = await axios.post(URL, {
+        email: newEmail,
+        password: newPassword,
+        nickname: newNickname,
       });
       console.log("회원가입 성공!", response.data);
-    } catch (error) {
-      console.error("회원가입 실패! :", error);
+    } catch (error: any) {
+      let message: string | null = null;
+
+      if (error instanceof Error) message = error.message;
+      else message = "회원가입에 실패하였습니다.";
+
+      console.error(message);
+      setError(message);
     }
   };
 
@@ -28,29 +40,34 @@ export default function CreateForm() {
       onSubmit={handleSubmit}
       className="bg-white py-16 px-12 shadow-md rounded-lg space-y-6 w-full max-w-md"
     >
-      <Input
-        value={nickname}
-        onChange={(e) => setNickname(e.target.value)}
+      {error && <p className="text-red-500">{error}</p>}
+      <InputLogin
+        value={newNickname}
+        onChange={(e) => {
+          setNewNickname(e.target.value);
+        }}
         context="Nickname"
         type="text"
         placeholder="Enter your nickname"
       />
 
-      <Input
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
+      <InputLogin
+        value={newEmail}
+        onChange={(e) => setNewEmail(e.target.value)}
         context="Email address"
         type="email"
         placeholder="Enter your Email"
       />
-      <Input
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
+      <InputLogin
+        value={newPassword}
+        onChange={(e) => setNewPassword(e.target.value)}
         context="Password"
         type="password"
         placeholder="Enter your Password"
       />
-      <Input
+      <InputLogin
+        value={newConfirm}
+        onChange={(e) => setNewConfirm(e.target.value)}
         context="Confirm Password"
         type="password"
         placeholder="Enter your Confirm Password"

@@ -1,24 +1,43 @@
-interface InputProps {
-  value?: string;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  context: string;
+import React, {
+  ChangeEventHandler,
+  KeyboardEventHandler,
+  MouseEventHandler,
+} from "react";
+interface InputProp {
   type: string;
-  placeholder: string;
+  value: string;
+  placeholder?: string;
+  onChange: ChangeEventHandler<HTMLInputElement>;
+  onKeyDown?: KeyboardEventHandler<HTMLInputElement>;
+  onClick: MouseEventHandler<HTMLButtonElement>;
 }
 
-const Input = ({ value, onChange, context, type, placeholder }: InputProps) => {
+const InputBox: React.FC<InputProp> = ({
+  type,
+  value,
+  placeholder,
+  onChange,
+  onKeyDown,
+  onClick,
+}) => {
   return (
-    <div className="space-y-2">
-      <h2 className="font-semibold">{context}</h2>
+    <div className="flex items-center justify-center bg-gray-50 rounded-full px-4 py-2 max-w-2xl mx-auto">
       <input
-        value={value}
-        onChange={onChange}
-        className="w-full py-1 px-3 border pl-3 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500"
         type={type}
+        value={value}
         placeholder={placeholder}
+        onChange={onChange}
+        onKeyDown={onKeyDown}
+        className="flex-grow w-4/6 bg-transparent outline-none"
       />
+      <button
+        onClick={onClick}
+        className="flex-shrink-0 p-2 font-sans bg-blue-100 text-gray-600 rounded-full hover:bg-blue-300"
+      >
+        send
+      </button>
     </div>
   );
 };
 
-export default Input;
+export default InputBox;

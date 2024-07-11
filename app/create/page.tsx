@@ -1,4 +1,4 @@
-import CreateForm from "@/components/create/createForm";
+import CreateForm from "@/components/create/CreateForm";
 
 export default function CreateAccount() {
   return (
