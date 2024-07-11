@@ -19,28 +19,38 @@ const CreateChatRoomForm: React.FC<CreateChatRoomFormProps> = ({ onClose }) => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!accessToken) {
-      setError('No Access');
+      setError('No Access Token available. Please log in again.');
       return;
     }
     try {
       const data = await createChatRoom(title, accessToken);
-      setSuccessMessage('created successfully!');
+      if (data === null) {
+        setError('Failed to create chat room. Received null data.');
+        return;
+      }
+      setSuccessMessage('Chat room created successfully!');
       setError(null);
       setTitle('');
-      if (data?.cr_id) {
+      if (data.cr_id) {
         onClose();
         router.refresh();
+      } else {
+        setError('Created chat room, but no room ID was returned.');
       }
     } catch (error) {
-      setError('Failed to create chat room. Please try again.');
+      if (error instanceof Error) {
+        setError(`Failed to create chat room: ${error.message}`);
+      } else {
+        setError('An unknown error occurred while creating the chat room.');
+      }
     }
   };
 
-  useEffect(() => {
-    if (successMessage) {
-      router.refresh();
-    }
-  }, [successMessage]);
+  // useEffect(() => {
+  //   if (successMessage) {
+  //     router.refresh();
+  //   }
+  // }, [successMessage]);
 
   return (
     <div className="max-w-md mx-auto mt-10 p-4 border rounded-md shadow-md">

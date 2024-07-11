@@ -9,6 +9,7 @@ import { useAuthStore } from "@/app/store";
 const AccountForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage,setErrorMessage] = useState('')
   const router = useRouter();
   const setTokens = useAuthStore((state) => state.setTokens);
 
@@ -21,10 +22,22 @@ const AccountForm = () => {
         setTokens(data.accessToken, data.refreshToken);
         router.push('/Chat');
       } else {
-        console.error('Login failed: Invalid response from server');
+        throw new Error('Invalid response from server');
       }
     } catch (err) {
-      console.error('Login failed', err);
+      console.error('Login failed', err);      
+      if (err instanceof Error) {
+        if (err.message === 'Invalid response from server') {
+          setErrorMessage('Login failed: Invalid response from server. Please try again.');
+        } else if (err.message.includes('Network Error')) {
+          setErrorMessage('Network error. Please check your internet connection and try again.');
+        } else if (err.message.includes('401')) {
+          setErrorMessage('Invalid email or password. Please check your credentials and try again.');
+        } else if (err.message.includes('500')) {
+          setErrorMessage('Server error. Please try again later.');
+        }
+      }
+      console.log(errorMessage);
     }
   }
 
