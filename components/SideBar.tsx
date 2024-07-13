@@ -1,3 +1,4 @@
+// components/Sidebar.tsx
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -15,10 +16,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
   const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
   const { accessToken } = useAuthStore();
   const router = useRouter();
   
   useEffect(() => {
+    setIsClient(true);
     const fetchChatRooms = async () => {
       if (!accessToken) {
         setError('No Access');
@@ -51,6 +54,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
   const handleSelectChatRoom = (r_id: number) => {
     router.push(`/Chat/${r_id}`);
   };
+
+  if (!isClient) {
+    return null; 
+  }
 
   return (
     <div className="flex h-full">
