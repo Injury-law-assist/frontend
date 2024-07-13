@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useAuthStore } from "../store";
 
-const BASE_URL = 'https://api.g-start-up.com/api';
+const BASE_URL = 'https://api.g-start-up.com/service/api';
 const accessToken = useAuthStore.getState().accessToken;
 
 export const getLogin = async (email: string, password: string) => {
