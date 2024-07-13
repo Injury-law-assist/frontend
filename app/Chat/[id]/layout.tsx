@@ -1,8 +1,9 @@
-"use client";
-import Footer from "@/components/chatting/Footer";
-import Header from "@/components/chatting/Header";
-import Sidebar from "@/components/chatting/SideBar";
-import { useState } from "react";
+'use client';
+
+import React, { useState } from 'react';
+import Header from "@/components/Header";
+import Sidebar from "@/components/SideBar";
+import Footer from "@/components/Footer";
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -13,10 +14,12 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   return (
     <div className="flex flex-col h-screen">
-      <Header />
+      {/* <Header /> */}
       <div className="flex flex-grow overflow-hidden">
         <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-        <div className="flex-grow flex flex-col">{children}</div>
+        <div className="flex-grow flex flex-col overflow-auto">
+          {children}
+        </div>
       </div>
       <Footer />
     </div>

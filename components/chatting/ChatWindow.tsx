@@ -1,17 +1,40 @@
-"use client";
-import React, { useState, useEffect, useRef } from "react";
-import ChatBubble from "./ChatBubble";
-import ChatInput from "./ChatInput";
+'use client';
+import React, { useState, useEffect, useRef } from 'react';
+import ChatBubble from './ChatBubble';
+import ChatInput from './ChatInput';
+import { getMessages } from '@/app/_api/api'; 
+import { useAuthStore } from '@/app/store';
 
-const ChatWindow: React.FC = () => {
-  const [messages, setMessages] = useState<{ text: string; isUser: boolean }[]>(
-    []
-  );
+interface ChatWindowProps {
+  r_id: number;
+}
+
+const ChatWindow: React.FC<ChatWindowProps> = ({ r_id }) => {
+  const [messages, setMessages] = useState<{ text: string; isUser: boolean }[]>([]);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const { accessToken } = useAuthStore();
+
+  useEffect(() => {
+    if (!r_id || !accessToken) return;
+
+    const fetchMessages = async () => {
+      const fetchedMessages = await getMessages(r_id, accessToken);
+      
+      if (fetchedMessages) {
+        const formattedMessages = fetchedMessages.map((msg: any) => ({
+          text: msg.content,
+          isUser: msg.isUser,
+        }));
+        setMessages(formattedMessages);
+      }
+    };
+
+    fetchMessages();
+  }, [r_id, accessToken]);
 
   const handleSendMessage = (message: string) => {
     setMessages((prev) => [...prev, { text: message, isUser: true }]);
-    setMessages((prev) => [...prev, { text: "asd", isUser: false }]);
+    setMessages((prev) => [...prev, { text: "자동 응답 메시지", isUser: false }]); // 실제 응답 메시지로 교체하세요
   };
 
   useEffect(() => {
