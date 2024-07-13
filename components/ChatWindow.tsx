@@ -17,6 +17,7 @@ interface Message {
 const ChatWindow: React.FC<ChatWindowProps> = ({ r_id }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [socket, setSocket] = useState<Socket | null>(null);
+  const [isAwaitingResponse, setIsAwaitingResponse] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const { accessToken } = useAuthStore();
 
@@ -27,12 +28,13 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ r_id }) => {
       const fetchedMessages = await getMessages(r_id, accessToken);
       
       if (fetchedMessages) {
-        const formattedMessages = fetchedMessages.map((msg: any) => ({
+        const sortedMessages = fetchedMessages.sort((a: any, b: any) => a.m_id - b.m_id);
+        const formattedMessages = sortedMessages.map((msg: any) => ({
           text: msg.m_content,
           isUser: msg.m_id % 2 === 0,
         }));
         setMessages(formattedMessages);
-        console.log(formattedMessages)
+        console.log(formattedMessages);
       }
     } catch (error) {
       console.error("Failed to fetch messages:", error);
@@ -59,6 +61,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ r_id }) => {
       newSocket.on("chat message", (data) => {
         if (data && data.answerMessage) {
           setMessages(prev => [...prev, { text: data.answerMessage.answer, isUser: false }]);
+          setIsAwaitingResponse(false);
         }
       });
 
@@ -68,7 +71,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ r_id }) => {
 
       newSocket.on("reconnect", () => {
         console.log("Reconnected to server");
-        fetchMessages();  // 재연결 시 메시지 다시 불러오기
+        fetchMessages();
       });
     };
 
@@ -93,6 +96,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ r_id }) => {
       };
       socket.emit("chat message", { roomId: r_id, msg: questionMessage });
       setMessages(prev => [...prev, { text: message, isUser: true }]);
+      setIsAwaitingResponse(true);
     }
   };
 
@@ -106,6 +110,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ r_id }) => {
         {messages.map((msg, index) => (
           <ChatBubble key={index} message={msg.text} isUser={msg.isUser} />
         ))}
+        {isAwaitingResponse && <ChatBubble message="답변중입니다..." isUser={false} />}
         <div ref={messagesEndRef} />
       </div>
       <ChatInput onSend={handleSendMessage} />
