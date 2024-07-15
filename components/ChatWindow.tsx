@@ -5,6 +5,7 @@ import ChatBubble from './ChatBubble';
 import ChatInput from './ChatInput';
 import { getMessages } from '@/app/_api/api';
 import { useAuthStore } from '@/app/store';
+import SurveyModal from './SurveyModal';
 
 interface ChatWindowProps {
   r_id: number;
@@ -21,7 +22,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ r_id }) => {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const { accessToken } = useAuthStore();
   const queryClient = useQueryClient();
-
+  const [showModal, setShowModal] = useState<boolean>(false);
   const { data: messages = [], isLoading, error } = useQuery<Message[]>({
     queryKey: ['messages', r_id],
     queryFn: async () => {
@@ -38,43 +39,43 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ r_id }) => {
 
   useEffect(() => {
     if (!r_id) return;
-  
+
     const newSocket = io("https://api.g-start-up.com", {
       path: "/bot",
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
     });
-  
+
     const setupSocket = () => {
       newSocket.emit("join room", r_id);
-  
+
       newSocket.on("chat message", (data) => {
         if (data && data.answerMessage) {
-          queryClient.setQueryData(['messages', r_id], (oldData: Message[] | undefined) => 
+          queryClient.setQueryData(['messages', r_id], (oldData: Message[] | undefined) =>
             [...(oldData || []), { text: data.answerMessage.answer, isUser: false }]
           );
           setIsAwaitingResponse(false);
         }
       });
-  
+
       newSocket.on("disconnect", () => {
         console.log("Disconnected from server");
       });
-  
+
       newSocket.on("reconnect", () => {
         console.log("Reconnected to server");
         queryClient.invalidateQueries({ queryKey: ['messages', r_id] });
       });
     };
-  
+
     newSocket.on("connect", () => {
       console.log(`Connected with ID: ${newSocket.id}`);
       setupSocket();
     });
-  
+
     setSocket(newSocket);
-  
+
     return () => {
       console.log(`Disconnecting from room ${r_id}`);
       newSocket.disconnect();
@@ -88,7 +89,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ r_id }) => {
         question: message.trim()
       };
       socket.emit("chat message", { roomId: r_id, msg: questionMessage });
-      queryClient.setQueryData(['messages', r_id], (oldData: Message[] | undefined) => 
+      queryClient.setQueryData(['messages', r_id], (oldData: Message[] | undefined) =>
         [...(oldData || []), { text: message, isUser: true }]
       );
       setIsAwaitingResponse(true);
@@ -99,17 +100,37 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ r_id }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  const onSurvey = () => {
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
+  const handleSubmit = () => {
+    console.log("Survey submitted");
+  };
+
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {(error as Error).message}</div>;
 
   return (
-    <div className="flex flex-col h-full max-h-screen">
-      <div className="flex-grow overflow-y-auto p-4">
+    <div className="flex flex-col h-full max-h-screen relative">
+      {showModal && <SurveyModal closeModal={closeModal} handleSubmit={handleSubmit} />}
+      <div className={`flex-grow overflow-y-auto p-4 ${showModal ? 'opacity-50' : ''}`}>
         {messages.map((msg, index) => (
           <ChatBubble key={index} message={msg.text} isUser={msg.isUser} />
         ))}
         {isAwaitingResponse && <ChatBubble message="답변중입니다..." isUser={false} />}
         <div ref={messagesEndRef} />
+      </div>
+      <div className='justify-center text-center'>
+        <button
+          onClick={onSurvey}
+          className='w-20 h-10 justify-center text-center p-2 font-sans bg-white text-gray-600 rounded-full hover:bg-gray-100'
+        >대화종료
+        </button>
       </div>
       <ChatInput onSend={handleSendMessage} />
     </div>

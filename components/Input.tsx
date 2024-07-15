@@ -24,6 +24,7 @@ const InputBox:React.FC<InputProp>=({type,value,placeholder,onChange,onKeyDown,o
             className="flex-shrink-0 p-2 font-sans bg-blue-100 text-gray-600 rounded-full hover:bg-blue-300"
           >보내기
           </button>
+          
         </div>
       );
 }
