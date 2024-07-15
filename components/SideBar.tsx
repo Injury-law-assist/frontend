@@ -51,6 +51,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
     }
   };
 
+  
+
   const handleSelectChatRoom = (r_id: number) => {
     router.push(`/Chat/${r_id}`);
   };

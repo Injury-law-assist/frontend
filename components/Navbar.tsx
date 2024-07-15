@@ -1,15 +1,20 @@
 'use client';
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuthStore } from "@/app/store";
 import { useRouter } from "next/navigation";
 import CreateChatRoomForm from "@/components/CreateChatRoom";
 
 const Navbar = () => {
+  const [isClient, setIsClient] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
   const { accessToken, clearTokens } = useAuthStore();
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const handleLogout = () => {
     clearTokens();
@@ -23,6 +28,10 @@ const Navbar = () => {
   const closeModal = () => {
     setShowModal(false);
   };
+
+  if (!isClient) {
+    return null;
+  }
 
   return (
     <div className="bg-blue-200 flex justify-between items-center h-[80px] w-full pl-8 pr-5">

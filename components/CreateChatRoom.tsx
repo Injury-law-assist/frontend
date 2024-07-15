@@ -9,12 +9,25 @@ interface CreateChatRoomFormProps {
   onClose: () => void;
 }
 
+interface ChatRoomResponse {
+  message: string;
+  statusCode: number;
+  data: {
+    cr_id: number;
+    title: string;
+    u_id: number;
+    cr_created_at: string;
+    cr_updated_at: string;
+  }
+}
+
 const CreateChatRoomForm: React.FC<CreateChatRoomFormProps> = ({ onClose }) => {
   const [title, setTitle] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const { accessToken } = useAuthStore();
   const router = useRouter();
+
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -23,19 +36,15 @@ const CreateChatRoomForm: React.FC<CreateChatRoomFormProps> = ({ onClose }) => {
       return;
     }
     try {
-      const data = await createChatRoom(title, accessToken);
-      if (data === null) {
-        setError('Failed to create chat room. Received null data.');
-        return;
-      }
-      setSuccessMessage('Chat room created successfully!');
-      setError(null);
-      setTitle('');
-      if (data.cr_id) {
-        onClose();
-        router.refresh();
+      const response = await createChatRoom(title, accessToken) as ChatRoomResponse;
+      
+      if (response.statusCode === 200 && response.data && response.data.cr_id) {
+        setSuccessMessage('Chat room created successfully!');
+        setError(null);
+        setTitle('');
+        onClose(); 
       } else {
-        setError('Created chat room, but no room ID was returned.');
+        setError('Failed to create chat room. Unexpected response structure.');
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -46,11 +55,7 @@ const CreateChatRoomForm: React.FC<CreateChatRoomFormProps> = ({ onClose }) => {
     }
   };
 
-  // useEffect(() => {
-  //   if (successMessage) {
-  //     router.refresh();
-  //   }
-  // }, [successMessage]);
+
 
   return (
     <div className="max-w-md mx-auto mt-10 p-4 border rounded-md shadow-md">

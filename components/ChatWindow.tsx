@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import io, { Socket } from "socket.io-client";
 import ChatBubble from './ChatBubble';
 import ChatInput from './ChatInput';
-import { getMessages } from '@/app/_api/api'; 
+import { getMessages } from '@/app/_api/api';
 import { useAuthStore } from '@/app/store';
 
 interface ChatWindowProps {
@@ -15,94 +16,91 @@ interface Message {
 }
 
 const ChatWindow: React.FC<ChatWindowProps> = ({ r_id }) => {
-  const [messages, setMessages] = useState<Message[]>([]);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isAwaitingResponse, setIsAwaitingResponse] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const { accessToken } = useAuthStore();
+  const queryClient = useQueryClient();
 
-  const fetchMessages = useCallback(async () => {
-    if (!r_id || !accessToken) return;
-    
-    try {
+  const { data: messages = [], isLoading, error } = useQuery<Message[]>({
+    queryKey: ['messages', r_id],
+    queryFn: async () => {
+      if (!r_id || !accessToken) return [];
       const fetchedMessages = await getMessages(r_id, accessToken);
-      
-      if (fetchedMessages) {
-        const sortedMessages = fetchedMessages.sort((a: any, b: any) => a.m_id - b.m_id);
-        const formattedMessages = sortedMessages.map((msg: any) => ({
+      return fetchedMessages.sort((a: any, b: any) => a.m_id - b.m_id)
+        .map((msg: any) => ({
           text: msg.m_content,
           isUser: msg.m_id % 2 === 0,
         }));
-        setMessages(formattedMessages);
-        console.log(formattedMessages);
-      }
-    } catch (error) {
-      console.error("Failed to fetch messages:", error);
-    }
-  }, [r_id, accessToken]);
-
-  useEffect(() => {
-    fetchMessages();
-  }, [fetchMessages]);
+    },
+    enabled: !!r_id && !!accessToken,
+  });
 
   useEffect(() => {
     if (!r_id) return;
-
-    const newSocket = io("https://api.g-start-up.com", { 
+  
+    const newSocket = io("https://api.g-start-up.com", {
       path: "/bot",
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
     });
-
+  
     const setupSocket = () => {
       newSocket.emit("join room", r_id);
-
+  
       newSocket.on("chat message", (data) => {
         if (data && data.answerMessage) {
-          setMessages(prev => [...prev, { text: data.answerMessage.answer, isUser: false }]);
+          queryClient.setQueryData(['messages', r_id], (oldData: Message[] | undefined) => 
+            [...(oldData || []), { text: data.answerMessage.answer, isUser: false }]
+          );
           setIsAwaitingResponse(false);
         }
       });
-
+  
       newSocket.on("disconnect", () => {
         console.log("Disconnected from server");
       });
-
+  
       newSocket.on("reconnect", () => {
         console.log("Reconnected to server");
-        fetchMessages();
+        queryClient.invalidateQueries({ queryKey: ['messages', r_id] });
       });
     };
-
+  
     newSocket.on("connect", () => {
       console.log(`Connected with ID: ${newSocket.id}`);
       setupSocket();
     });
-
+  
     setSocket(newSocket);
-
+  
     return () => {
       console.log(`Disconnecting from room ${r_id}`);
       newSocket.disconnect();
     };
-  }, [r_id, fetchMessages]);
+  }, [r_id, queryClient]);
 
-  const handleSendMessage = (message: string) => {
+  const handleSendMessage = useCallback((message: string) => {
     if (socket && message.trim()) {
       const questionMessage = {
         sender: "User",
         question: message.trim()
       };
       socket.emit("chat message", { roomId: r_id, msg: questionMessage });
-      setMessages(prev => [...prev, { text: message, isUser: true }]);
+      queryClient.setQueryData(['messages', r_id], (oldData: Message[] | undefined) => 
+        [...(oldData || []), { text: message, isUser: true }]
+      );
       setIsAwaitingResponse(true);
     }
-  };
+  }, [socket, r_id, queryClient]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {(error as Error).message}</div>;
 
   return (
     <div className="flex flex-col h-full max-h-screen">

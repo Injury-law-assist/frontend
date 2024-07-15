@@ -1,43 +1,27 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { getChatting } from '@/app/_api/api';
 import { useAuthStore } from '@/app/store';
 import Link from 'next/link';
 import { ChatRoom } from '../types/ChatRoom';
 
 const ChatList = () => {
-  const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const { accessToken } = useAuthStore();
 
-  useEffect(() => {
-    const fetchChatRooms = async () => {
-      if (!accessToken) {
-        setError('No Access');
-        setLoading(false);
-        return;
-      }
-      try {
-        const data = await getChatting(accessToken);
-        setChatRooms(data);
-      } catch (error) {
-        setError('Failed to load chat rooms. Please try again.');
-      } finally {
-        setLoading(false);
-      }
-    };
+  const { data: chatRooms, isLoading, error } = useQuery<ChatRoom[], Error>({
+    queryKey: ['chatRooms', accessToken],
+    queryFn: () => getChatting(accessToken),
+    enabled: !!accessToken,
+  });
 
-    fetchChatRooms();
-  }, [accessToken]);
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>{error.message || 'An error occurred'}</p>;
+  if (!chatRooms) return <p>채팅방이 존재하지 않습니다.</p>;
 
   return (
     <div className="max-w-md mx-auto mt-10 p-4 border rounded-md shadow-md">
-      <h2 className="text-2xl font-bold mb-4">Your Chat Rooms</h2>
+      <h2 className="text-2xl font-bold mb-4">대화 내역</h2>
       <ul className="list-disc pl-5 space-y-2">
         {chatRooms.map((room) => (
           <li key={room.cr_id} className="flex justify-between items-center">
