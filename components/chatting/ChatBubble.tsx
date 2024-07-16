@@ -8,7 +8,15 @@ interface ChatBubbleProps {
 const ChatBubble: React.FC<ChatBubbleProps> = ({ message, isUser }) => {
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-2`}>
-      <div className={`max-w-md px-4 py-2 rounded-lg shadow ${isUser ? 'bg-green-200 text-right' : 'bg-gray-200 text-left'}`}>
+      <div 
+        className={`max-w-md px-4 py-2 rounded-lg shadow ${
+          isUser ? 'bg-green-200' : 'bg-gray-200'
+        }`}
+        style={{ 
+          direction: 'ltr', 
+          textAlign: isUser ? 'right' : 'left' 
+        }}
+      >
         {message}
       </div>
     </div>
