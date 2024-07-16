@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAuthStore } from "./store";
 import CreateChatRoomForm from "@/components/CreateChatRoom";
+import Nav from "@/components/mainpage/Nav";
+import Bottom from "@/components/mainpage/Bottom";
 
 export default function Home() {
   const [showModal, setShowModal] = useState(false);
@@ -24,79 +26,67 @@ export default function Home() {
   };
 
   return (
-    <>
-      <div className="bg-blue-200 flex justify-center items-center h-[80px] w-full pl-8 pr-5">
-        <img
-          className="h-full w-auto rounded-md mx-5"
-          src="/logo.png"
-          alt="logo"
-        />
-        <span className="text-3xl font-bold text-slate-700 font-sans">
-          InjuryLawAssist
-        </span>
-      </div>
+    <div className="flex flex-col h-screen">
+      <Nav />
 
-      <div className="bg-bgPic bg-cover bg-center min-h-screen flex flex-col justify-center items-center gap-8 relative">
-        <div>
-          <span className="text-white text-4xl font-bold">
+      <main className="flex-grow bg-blue-100 bg-cover bg-center flex flex-col justify-between">
+        <div className="flex-grow flex flex-col justify-center items-center gap-4">
+          <h1 className="text-white text-4xl font-bold text-center px-4">
             IN PURSUIT OF JUSTICE, EVERYDAY
-          </span>
-        </div>
-        <div className="bg-white bg-opacity-50 w-full max-w-[90%] mx-auto p-4 rounded-lg shadow-lg">
-          <div className="max-w-md mx-auto flex flex-col items-center space-y-4">
-            <div className="bg-blue-300 p-3 rounded-lg flex flex-col w-full">
-              <span className="text-white font-semibold text-center">
-                새로운 채팅을 만들어 보세요!
-              </span>
-              <button
-                onClick={handleCreateChat}
-                className="bg-green-100 p-1 rounded-md font-medium hover:scale-110 transition active:bg-purple-500"
-              >
-                Create Chat Room
-              </button>
-            </div>
+          </h1>
 
-            {accessToken ? (
-              <button
-                onClick={handleLogout}
-                className="bg-white p-1 rounded-md font-semibold"
-              >
-                Logout
-              </button>
-            ) : (
-              <div>
-                <span className="text-slate-500 mx-4">로그인 하기</span>
-                <Link
-                  className="bg-white p-1 rounded-md font-semibold"
-                  href="/login"
+          <div className="bg-white bg-opacity-50 w-full max-w-[90%] p-4 rounded-lg shadow-lg">
+            <div className="max-w-md mx-auto flex flex-col items-center space-y-4">
+              <div className="bg-blue-300 p-3 rounded-lg flex flex-col w-full">
+                <span className="text-white font-semibold text-center">
+                  새로운 채팅을 만들어 보세요!
+                </span>
+                <button
+                  onClick={handleCreateChat}
+                  className="bg-green-100 p-1 rounded-md font-medium hover:scale-110 transition active:bg-purple-500"
                 >
-                  Login
-                </Link>
+                  Create Chat Room
+                </button>
               </div>
-            )}
-            {showModal && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-                <div className="bg-white p-6 rounded-md shadow-md w-full max-w-md relative">
-                  <button
-                    onClick={closeModal}
-                    className="absolute top-2 right-2 bg-gray-200 p-2 rounded-full"
+
+              {accessToken ? (
+                <button
+                  onClick={handleLogout}
+                  className="bg-white p-1 rounded-md font-semibold"
+                >
+                  Logout
+                </button>
+              ) : (
+                <div>
+                  <span className="text-slate-500 mx-4">로그인 하기</span>
+                  <Link
+                    className="bg-white p-1.5 rounded-md font-semibold"
+                    href="/login"
                   >
-                    X
-                  </button>
-                  <CreateChatRoomForm onClose={closeModal} />
+                    Login
+                  </Link>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
-        <div className="absolute bottom-10 bg-gray-500 bg-opacity-40 w-full h-10 max-w-[40%] flex justify-center items-center rounded-md">
-          <div className="">
-            <button className="bg-amber-900 rounded-md p-1 text-white hover:scale-110">
-              Contact
+
+        <Bottom />
+      </main>
+
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-md shadow-md w-full max-w-md relative">
+            <button
+              onClick={closeModal}
+              className="absolute top-2 right-2 bg-gray-200 p-2 rounded-full"
+            >
+              X
             </button>
+            <CreateChatRoomForm onClose={closeModal} />
           </div>
         </div>
-      </div>
-    </>
+      )}
+    </div>
   );
 }
