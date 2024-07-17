@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { getChatting } from '@/app/_api/api';
-import { useAuthStore } from '@/app/store';
-import Link from 'next/link';
-import { ChatRoom } from '../types/ChatRoom';
+import { useEffect, useState } from "react";
+import { getChatting } from "@/app/_api/api";
+import { useAuthStore } from "@/app/store";
+import Link from "next/link";
+import { ChatRoom } from "../types/ChatRoom";
 
 const ChatList = () => {
   const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
@@ -15,7 +15,7 @@ const ChatList = () => {
   useEffect(() => {
     const fetchChatRooms = async () => {
       if (!accessToken) {
-        setError('No Access');
+        setError("No Access");
         setLoading(false);
         return;
       }
@@ -23,7 +23,7 @@ const ChatList = () => {
         const data = await getChatting(accessToken);
         setChatRooms(data);
       } catch (error) {
-        setError('Failed to load chat rooms. Please try again.');
+        setError("Failed to load chat rooms. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -42,7 +42,10 @@ const ChatList = () => {
         {chatRooms.map((room) => (
           <li key={room.cr_id} className="flex justify-between items-center">
             <span>{room.title}</span>
-            <Link href={`/Chat/${room.cr_id}`} className="text-indigo-700 hover:text-indigo-500 font-semibold">
+            <Link
+              href={`/Chat/${room.cr_id}`}
+              className="text-indigo-700 hover:text-indigo-500 font-semibold"
+            >
               Go to Chat
             </Link>
           </li>

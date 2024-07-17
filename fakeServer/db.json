@@ -1,0 +1,16 @@
+{
+  "memo": [
+    {
+      "email": "levi@gmail.com",
+      "password": "asdf",
+      "nickname": "levi",
+      "id": "b478"
+    },
+    {
+      "id": "77bc",
+      "email": "levi2@gmail.com",
+      "password": "asdf",
+      "nickname": "levi2"
+    }
+  ]
+}

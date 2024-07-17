@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Link from "next/link";
 import { useState } from "react";
@@ -13,7 +13,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     clearTokens();
-    router.push('/Chat');
+    router.push("/Chat");
   };
 
   const handleCreateChat = () => {

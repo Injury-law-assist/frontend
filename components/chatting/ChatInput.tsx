@@ -1,26 +1,28 @@
-import React, { useState } from 'react';
-import InputBox from './Input';
+import React, { useState } from "react";
+import InputBox from "../shared/Input";
 
 interface ChatInputProps {
   onSend: (message: string) => void;
 }
 
 const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
-  const handleChangeMessage: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+  const handleChangeMessage: React.ChangeEventHandler<HTMLInputElement> = (
+    e
+  ) => {
     setMessage(e.target.value);
   };
 
   const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       sendHandleMessage();
     }
   };
   const sendHandleMessage = () => {
-    if (message.trim() !== '') {
+    if (message.trim() !== "") {
       onSend(message);
-      setMessage('');
+      setMessage("");
     }
   };
   return (

@@ -1,13 +1,13 @@
 import Link from "next/link";
 
-const NewAccount = () => {
+export default function NewAccount() {
   return (
     <div className="flex flex-col justify-center items-center">
       <div className="flex space-x-4 items-center">
         <span className="text-sm">Need to create an account?</span>
         <Link
           className="text-indigo-700 hover:text-indigo-500 font-semibold"
-          href="/Create"
+          href="/create"
         >
           Create an account
         </Link>
@@ -24,6 +24,4 @@ const NewAccount = () => {
       </Link>
     </div>
   );
-};
-
-export default NewAccount;
+}
