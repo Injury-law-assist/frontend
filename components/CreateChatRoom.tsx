@@ -28,7 +28,6 @@ const CreateChatRoomForm: React.FC<CreateChatRoomFormProps> = ({ onClose }) => {
   const { accessToken } = useAuthStore();
   const router = useRouter();
 
-
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!accessToken) {
@@ -37,7 +36,7 @@ const CreateChatRoomForm: React.FC<CreateChatRoomFormProps> = ({ onClose }) => {
     }
     try {
       const response = await createChatRoom(title, accessToken) as ChatRoomResponse;
-      
+
       if (response.statusCode === 200 && response.data && response.data.cr_id) {
         setSuccessMessage('Chat room created successfully!');
         setError(null);
@@ -54,8 +53,6 @@ const CreateChatRoomForm: React.FC<CreateChatRoomFormProps> = ({ onClose }) => {
       }
     }
   };
-
-
 
   return (
     <div className="max-w-md mx-auto mt-10 p-4 border rounded-md shadow-md">

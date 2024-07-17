@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useAuthStore } from "@/app/store";
 import { useRouter } from "next/navigation";
 import CreateChatRoomForm from "@/components/CreateChatRoom";
+import DarkModeToggle from "@/app/utils/DarkModeToggle";
 
 const Navbar = () => {
   const [isClient, setIsClient] = useState(false);
@@ -18,7 +19,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     clearTokens();
-    router.push('/Chat');
+    router.push('/');
   };
 
   const handleCreateChat = () => {
@@ -34,50 +35,43 @@ const Navbar = () => {
   }
 
   return (
-    <div className="bg-blue-200 flex justify-between items-center h-[80px] w-full pl-8 pr-5">
-      <img className="h-full w-auto rounded-md" src="/logo.png" alt="logo" />
-      <div className="flex gap-2">
-        <div className="flex flex-col items-center">
-          <span className="text-3xl font-bold text-slate-700 font-sans">
-            InjuryLawAssist
-          </span>
-          <div className="flex gap-6 text-md font-semibold mt-2">
-            <Link className="rounded-md" href="/">
-              HOME
-            </Link>
-            <Link className="rounded-md" href="/About">
-              ABOUT
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex gap-4">
-        <button
-          onClick={handleCreateChat}
-          className="bg-green-100 p-1 rounded-md font-medium hover:scale-110 transition active:bg-purple-500"
-        >
-          Create Chat Room
-        </button>
-        {accessToken ? (
-          <button
-            onClick={handleLogout}
-            className="bg-white p-1 rounded-md font-semibold"
-          >
-            Logout
-          </button>
-        ) : (
-          <Link className="bg-white p-1 rounded-md font-semibold" href="/login">
-            Login
+    <header className="bg-white shadow-md">
+      <nav className="container mx-auto px-6 py-3 flex justify-between items-center">
+        <div className="text-xl font-bold text-gray-800">
+          <Link href='/'>
+            산재처리 챗봇
           </Link>
-        )}
-      </div>
+        </div>
+        <div className="flex items-center space-x-4">
+          <Link href="/" className="text-gray-600 hover:text-blue-500">홈</Link>
+          {accessToken ? (
+            <>
+              <button
+                onClick={handleCreateChat}
+                className="text-gray-600 hover:text-blue-500">
+                채팅방 생성
+              </button>
+              <button
+                onClick={handleLogout}
+                className="text-gray-600 hover:text-blue-500">
+                로그아웃
+              </button>
+            </>
+          ) : (
+            <Link href="/login" className="text-gray-600 hover:text-blue-500">
+              로그인
+            </Link>
+          )}
+        </div>
+      </nav>
+
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-md shadow-md w-full max-w-md relative">
+        <div className="fixed inset-0 z-50 flex justify-center items-center">
+          <div className="absolute inset-0 bg-black opacity-50"></div>
+          <div className="bg-white p-6 rounded-md shadow-md z-10 w-full max-w-md relative">
             <button
               onClick={closeModal}
-              className="absolute top-2 right-2 bg-gray-200 p-2 rounded-full"
+              className="absolute top-2 right-2 bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition"
             >
               X
             </button>
@@ -85,7 +79,7 @@ const Navbar = () => {
           </div>
         </div>
       )}
-    </div>
+    </header>
   );
 };
 

@@ -6,6 +6,7 @@ import ChatInput from './ChatInput';
 import { getMessages } from '@/app/_api/api';
 import { useAuthStore } from '@/app/store';
 import SurveyModal from './SurveyModal';
+import { FaSpinner } from 'react-icons/fa';
 
 interface ChatWindowProps {
   r_id: number;
@@ -116,20 +117,26 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ r_id }) => {
   if (error) return <div>Error: {(error as Error).message}</div>;
 
   return (
-    <div className="flex flex-col h-full max-h-screen relative">
+    <div className="flex flex-col h-full max-h-screen from blue-100 to-white relative">
       {showModal && <SurveyModal closeModal={closeModal} handleSubmit={handleSubmit} />}
-      <div className={`flex-grow overflow-y-auto p-4 ${showModal ? 'opacity-50' : ''}`}>
+      <div className={`flex-grow overflow-y-auto p-4 space-y-4 ${showModal ? 'opacity-50' : ''}`}>
         {messages.map((msg, index) => (
           <ChatBubble key={index} message={msg.text} isUser={msg.isUser} />
         ))}
-        {isAwaitingResponse && <ChatBubble message="답변중입니다..." isUser={false} />}
+        {isAwaitingResponse && (
+          <div className="flex items-center space-x-2 text-gray-500">
+            <FaSpinner className="animate-spin" />
+            <span>답변중입니다...</span>
+          </div>
+        )}
         <div ref={messagesEndRef} />
       </div>
-      <div className='justify-center text-center'>
+      <div className='flex justify-center my-4'>
         <button
           onClick={onSurvey}
-          className='w-20 h-10 justify-center text-center p-2 font-sans bg-white text-gray-600 rounded-full hover:bg-gray-100'
-        >대화종료
+          className='px-6 py-2 font-semibold text-blue-600 bg-white rounded-full shadow-md hover:bg-blue-50 transition duration-300 ease-in-out'
+        >
+          대화종료
         </button>
       </div>
       <ChatInput onSend={handleSendMessage} />

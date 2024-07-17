@@ -20,7 +20,6 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           {children}
         </div>
       </div>
-      <Footer />
     </div>
   );
 };
