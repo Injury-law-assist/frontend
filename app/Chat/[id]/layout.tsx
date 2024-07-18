@@ -14,14 +14,12 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   return (
     <div className="flex flex-col h-screen">
-      {/* <Header /> */}
       <div className="flex flex-grow overflow-hidden">
         <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
         <div className="flex-grow flex flex-col overflow-auto">
           {children}
         </div>
       </div>
-      <Footer />
     </div>
   );
 };
