@@ -24,6 +24,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ r_id }) => {
   const { accessToken } = useAuthStore();
   const queryClient = useQueryClient();
   const [showModal, setShowModal] = useState<boolean>(false);
+  
   const { data: messages = [], isLoading, error } = useQuery<Message[]>({
     queryKey: ['messages', r_id],
     queryFn: async () => {
@@ -109,16 +110,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ r_id }) => {
     setShowModal(false);
   };
 
-  const handleSubmit = () => {
-    console.log("Survey submitted");
-  };
-
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {(error as Error).message}</div>;
 
   return (
     <div className="flex flex-col h-full max-h-screen from blue-100 to-white relative">
-      {showModal && <SurveyModal closeModal={closeModal} handleSubmit={handleSubmit} />}
+      {showModal && <SurveyModal closeModal={closeModal} r_id={r_id} />}
       <div className={`flex-grow overflow-y-auto p-4 space-y-4 ${showModal ? 'opacity-50' : ''}`}>
         {messages.map((msg, index) => (
           <ChatBubble key={index} message={msg.text} isUser={msg.isUser} />
