@@ -6,6 +6,7 @@ import { getChatting, deleteChat } from '@/app/_api/api';
 import { useAuthStore } from '@/app/store';
 import { ChatRoom } from '@/app/types/ChatRoom';
 import { useRouter } from 'next/navigation';
+import { FaChevronLeft, FaChevronRight, FaTrash, FaArrowRight } from 'react-icons/fa';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -16,12 +17,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
   const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isClient, setIsClient] = useState(false);
   const { accessToken } = useAuthStore();
   const router = useRouter();
   
   useEffect(() => {
-    setIsClient(true);
     const fetchChatRooms = async () => {
       if (!accessToken) {
         setError('No Access');
@@ -55,50 +54,48 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
     router.push(`/Chat/${r_id}`);
   };
 
-  if (!isClient) {
-    return null; 
-  }
-
   return (
-    <div className="flex h-full">
-      <div className={`h-full bg-gray-800 text-white transition-all duration-300 ${isOpen ? 'w-64' : 'w-16'}`}>
-        <div className="flex justify-end p-4">
-          <button
-            onClick={toggleSidebar}
-            className="text-white bg-gray-700 hover:bg-gray-600 p-2 rounded"
-          >
-            {isOpen ? '<<' : '>>'}
-          </button>
-        </div>
-        {isOpen && (
-          <div className="p-4">
-            <p className="mb-4">Your Chat Rooms</p>
-            {loading && <p>Loading...</p>}
-            {error && <p>{error}</p>}
-            <ul className="list-disc pl-5 space-y-2">
-              {chatRooms.map((room) => (
-                <li key={room.cr_id} className="flex justify-between items-center">
-                  <span>{room.title}</span>
-                  <div>
+    <div className={`h-full bg-gray-800 text-black transition-all duration-300 ${isOpen ? 'w-64' : 'w-16'}`}>
+      <div className="flex justify-end p-4">
+        <button
+          onClick={toggleSidebar}
+          className="text-white hover:bg-gray-700 p-2 rounded-full transition-colors duration-200"
+        >
+          {isOpen ? <FaChevronLeft /> : <FaChevronRight />}
+        </button>
+      </div>
+      {isOpen && (
+        <div className="p-4">
+          <h2 className="text-xl text-white font-semibold mb-4">대화 목록</h2>
+          {loading && <p className="text-gray-400">Loading...</p>}
+          {error && <p className="text-red-400">{error}</p>}
+          <ul className="space-y-2">
+            {chatRooms.map((room) => (
+              <li key={room.cr_id} className=" rounded-lg p-3 hover:bg-gray-600 transition-colors duration-200">
+                <div className="flex justify-between items-center">
+                  <span className="truncate text-white">{room.title}</span>
+                  <div className="flex space-x-2">
                     <button
                       onClick={() => handleSelectChatRoom(room.cr_id)}
-                      className="text-indigo-700 hover:text-indigo-500 font-semibold mr-2"
+                      className="text-blue-400 hover:text-blue-300 transition-colors duration-200"
+                      title="Go to chat room"
                     >
-                      Go
+                      <FaArrowRight />
                     </button>
                     <button
                       onClick={() => handleDelete(room.cr_id)}
-                      className="text-red-500 hover:text-red-300 font-semibold"
+                      className="text-red-400 hover:text-red-300 transition-colors duration-200"
+                      title="Delete chat room"
                     >
-                      Delete
+                      <FaTrash />
                     </button>
                   </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
