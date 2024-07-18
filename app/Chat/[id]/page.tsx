@@ -1,12 +1,20 @@
 'use client';
-import { useRouter,useParams } from 'next/navigation';
+
+import { useRouter, useParams } from 'next/navigation';
 import ChatWindow from '@/components/ChatWindow';
+import { useEffect, useState } from 'react';
 
 const ChatPage = () => {
-//   const router = useRouter();
   const { id } = useParams();
+  const [isLoading, setIsLoading] = useState(true);
 
-  if (!id) return <div>Loading...</div>;
+  useEffect(() => {
+    if (id) {
+      setIsLoading(false);
+    }
+  }, [id]);
+
+  if (isLoading) return <div>Loading...</div>;
 
   return <ChatWindow r_id={Number(id)} />;
 };
