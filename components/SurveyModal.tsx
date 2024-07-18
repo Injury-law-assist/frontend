@@ -1,21 +1,27 @@
 'use client'
 import { useState } from 'react';
-
+import { postSurvey } from '@/app/_api/api';
+import { useAuthStore } from '@/app/store';
 interface SurveyModalProps {
   closeModal: () => void;
-  handleSubmit: () => void;
+  r_id:number;
 }
 
-const SurveyModal: React.FC<SurveyModalProps> = ({ closeModal, handleSubmit }) => {
-  const [solved, setSolved] = useState<boolean>(false);
-  const [rating, setRating] = useState<number>(1);
+const SurveyModal: React.FC<SurveyModalProps> = ({ closeModal, r_id }) => {
+  const [resolved, setSolved] = useState<boolean>(false);
+  const [grade, setgrade] = useState<number>(1);
   const [feedback, setFeedback] = useState<string>('');
+  const {accessToken} = useAuthStore();
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ solved, rating, feedback });
-    handleSubmit();
-    closeModal();
+    try {
+      await postSurvey(r_id, accessToken, resolved, grade, feedback);
+      console.log('Survey submitted successfully');
+      closeModal();
+    } catch (error) {
+      console.error('Error submitting survey:', error);
+    }
   };
 
   return (
@@ -37,7 +43,7 @@ const SurveyModal: React.FC<SurveyModalProps> = ({ closeModal, handleSubmit }) =
                   type="checkbox"
                   className="form-checkbox h-5 w-5 text-blue-600"
                   value="yes"
-                  checked={solved === true}
+                  checked={resolved === true}
                   onChange={() => setSolved(true)}
                 />
                 <span className="ml-2">Yes</span>
@@ -47,7 +53,7 @@ const SurveyModal: React.FC<SurveyModalProps> = ({ closeModal, handleSubmit }) =
                   type="checkbox"
                   className="form-checkbox h-5 w-5 text-red-600"
                   value="no"
-                  checked={solved === false}
+                  checked={resolved === false}
                   onChange={() => setSolved(false)}
                 />
                 <span className="ml-2">No</span>
@@ -59,8 +65,8 @@ const SurveyModal: React.FC<SurveyModalProps> = ({ closeModal, handleSubmit }) =
             <input
               type="number"
               className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              value={rating}
-              onChange={(e) => setRating(Number(e.target.value))}
+              value={grade}
+              onChange={(e) => setgrade(Number(e.target.value))}
               min="1"
               max="5"
             />
