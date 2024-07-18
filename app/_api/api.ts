@@ -52,3 +52,14 @@ export const deleteChat = async (r_id: number, accessToken: string) => {
   });
   console.log(`Chat room with id ${r_id} deleted successfully`);
 }
+
+export const postSurvey = async(r_id:number,accessToken:string,resolved:boolean,grade:number,feedback:string)=>{
+  if (!accessToken) {
+    console.error('No access token found');
+    throw new Error('No access token found');
+  }
+  await axios.post(`${BASE_URL}/chat/${r_id}/status`,{ resolved,grade,feedback }, {
+    headers: { 'Authorization': `Bearer ${accessToken}` }
+  });
+  console.log(`Chat room with id ${r_id} Survey successfully submit`)
+}
