@@ -13,8 +13,9 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({ message, isUser }) => {
           isUser ? 'bg-green-200' : 'bg-gray-200'
         }`}
         style={{ 
-          direction: 'ltr', 
-          textAlign: isUser ? 'right' : 'left' 
+          textAlign: 'left',
+          wordBreak: 'keep-all',
+          overflowWrap: 'break-word'
         }}
       >
         {message}

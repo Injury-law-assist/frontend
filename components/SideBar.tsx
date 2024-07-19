@@ -7,6 +7,7 @@ import { ChatRoom } from '@/app/types/ChatRoom';
 import { useRouter } from 'next/navigation';
 import { FaChevronLeft, FaChevronRight, FaTrash, FaArrowRight, FaPlus } from 'react-icons/fa';
 import CreateChatRoomForm from './CreateChatRoom';
+
 interface SidebarProps {
   isOpen: boolean;
   toggleSidebar: () => void;
@@ -41,12 +42,16 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
   }, [accessToken]);
 
   const handleDelete = async (r_id: number): Promise<void> => {
-    try {
-      await deleteChat(r_id, accessToken);
-      setChatRooms(chatRooms.filter(room => room.cr_id !== r_id));
-      router.refresh();
-    } catch (error) {
-      setError('Failed to delete chat room. Please try again.');
+    const isConfirmed = window.confirm("대화를 삭제하시겠습니까?");
+    
+    if (isConfirmed) {
+      try {
+        await deleteChat(r_id, accessToken);
+        setChatRooms(chatRooms.filter(room => room.cr_id !== r_id));
+        router.refresh();
+      } catch (error) {
+        setError('Failed to delete chat room. Please try again.');
+      }
     }
   };
 
@@ -60,6 +65,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
 
   const handleCloseForm = () => {
     setShowCreateForm(false);
+  };
+
+  const handleCreateChatSuccess = (newChatRoomId: number) => {
+    handleCloseForm();
+    router.push(`/Chat/${newChatRoomId}`);
   };
 
   return (
@@ -94,7 +104,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
                   <div className="flex space-x-2">
                     <button
                       onClick={() => handleSelectChatRoom(room.cr_id)}
-                      className="text-blue-400 hover:text-blue-300 transition-colors duration-200"
+                      className="text-white hover:text-slate-300 transition-colors duration-200"
                       title="Go to chat room"
                     >
                       <FaArrowRight />
@@ -124,7 +134,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
-            <CreateChatRoomForm onClose={handleCloseForm} />
+            <CreateChatRoomForm onClose={handleCloseForm} onSuccess={handleCreateChatSuccess} />
           </div>
         </div>
       )}

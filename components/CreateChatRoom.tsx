@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { createChatRoom } from "@/app/_api/api";
 import { useAuthStore } from "@/app/store";
 
 interface CreateChatRoomFormProps {
     onClose: () => void;
+    onSuccess: (newChatRoomId: number) => void;
 }
 
 interface ChatRoomResponse {
@@ -21,12 +21,10 @@ interface ChatRoomResponse {
     };
 }
 
-const CreateChatRoomForm: React.FC<CreateChatRoomFormProps> = ({ onClose }) => {
+const CreateChatRoomForm: React.FC<CreateChatRoomFormProps> = ({ onClose, onSuccess }) => {
     const [title, setTitle] = useState("");
     const [error, setError] = useState<string | null>(null);
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const { accessToken } = useAuthStore();
-    const router = useRouter();
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -38,9 +36,7 @@ const CreateChatRoomForm: React.FC<CreateChatRoomFormProps> = ({ onClose }) => {
             const response = (await createChatRoom(title, accessToken)) as ChatRoomResponse;
 
             if (response.statusCode === 200 && response.data && response.data.cr_id) {
-                setSuccessMessage("Chat room created successfully!");
-                setError(null);
-                setTitle("");
+                onSuccess(response.data.cr_id);
                 onClose();
             } else {
                 setError("Failed to create chat room. Unexpected response structure.");
@@ -76,7 +72,6 @@ const CreateChatRoomForm: React.FC<CreateChatRoomFormProps> = ({ onClose }) => {
                 </button>
             </form>
             {error && <p className="mt-4 text-red-500">{error}</p>}
-            {successMessage && <p className="mt-4 text-green-500">{successMessage}</p>}
         </div>
     );
 };
