@@ -7,13 +7,6 @@ interface AuthState {
   clearTokens: () => void;
 }
 
-// export const useAuthStore = create<AuthState>((set) => ({
-//   accessToken: '',
-//   refreshToken:'',
-//   setTokens: (accessToken, refreshToken) => set({ accessToken, refreshToken }),
-//   clearTokens: () => set({ accessToken: '', refreshToken:'' }),
-// }));
-
 export const useAuthStore = create(
   persist<AuthState>(
     (set,get)=>({
@@ -23,7 +16,7 @@ export const useAuthStore = create(
       clearTokens: () => set({ accessToken: '', refreshToken:'' }),
     }),
     {name:'auth-storage',
-     getStorage:()=>sessionStorage,
+     getStorage:()=>localStorage,
     }
   )
 )
